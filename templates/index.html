@@ -3,51 +3,115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>😂 Random Joke App</title>
+  <title>🎮 Joke Reward Game</title>
+
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
-      height: 100vh;
+      align-items: center;
+      min-height: 100vh;
+      color: #fff;
     }
-    .container {
-      background: white;
+
+    .game-box {
+      background: rgba(255, 255, 255, 0.1);
       padding: 2rem 3rem;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
       text-align: center;
-      max-width: 500px;
+      width: 350px;
     }
+
     h1 {
-      color: #333;
+      margin-bottom: 15px;
+      font-size: 1.8rem;
     }
+
     p {
-      font-size: 1.3rem;
-      margin: 1.5rem 0;
+      font-size: 1.2rem;
+      margin: 1rem 0;
     }
-    button {
-      background: #0070f3;
-      color: white;
+
+    input {
+      padding: 10px;
+      width: 100%;
+      border-radius: 8px;
       border: none;
-      padding: 0.8rem 1.5rem;
-      border-radius: 5px;
-      cursor: pointer;
+      margin-top: 10px;
       font-size: 1rem;
     }
+
+    button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      background: #00ffae;
+      color: black;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.2s ease;
+    }
+
     button:hover {
-      background: #0059c1;
+      background: #00c98c;
+    }
+
+    .joke-box {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      background: rgba(255,255,255,0.2);
+      padding: 15px;
+      border-radius: 10px;
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>😂 Random Joke Generator</h1>
-    <p id="joke">{{ joke }}</p>
-    <button onclick="window.location.reload()">New Joke</button>
+  <div class="game-box">
+    <h1>🎮 Guess & Win a Joke</h1>
+    <p>Guess a number between <strong>1 and 5</strong></p>
+
+    <input type="number" id="guess" placeholder="Enter your guess…" min="1" max="5">
+
+    <button onclick="playGame()">Submit Guess</button>
+
+    <div id="result"></div>
+    <div id="joke-box" class="joke-box" style="display:none;"></div>
   </div>
+
+  <script>
+    async function playGame() {
+      const userGuess = parseInt(document.getElementById("guess").value);
+      const randomNumber = Math.floor(Math.random() * 5) + 1;
+      const resultDiv = document.getElementById("result");
+      const jokeBox = document.getElementById("joke-box");
+
+      if (!userGuess) {
+        resultDiv.innerHTML = "<p>Please enter a number.</p>";
+        return;
+      }
+
+      if (userGuess === randomNumber) {
+        resultDiv.innerHTML = "<p>🎉 Correct! You unlocked a joke!</p>";
+
+        // Fetch your joke API
+        const response = await fetch("/api/joke");
+        const data = await response.json();
+
+        jokeBox.innerHTML = "😂 " + data.joke;
+        jokeBox.style.display = "block";
+      } else {
+        resultDiv.innerHTML = `<p>❌ Wrong guess! The number was ${randomNumber}. Try again!</p>`;
+        jokeBox.style.display = "none";
+      }
+    }
+  </script>
 </body>
 </html>
